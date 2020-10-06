@@ -12,9 +12,12 @@ import (
 	"github.com/googollee/go-socket.io/engineio/transport/websocket"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	err := godotenv.Load(".env")
 
 	r := mux.NewRouter()
 

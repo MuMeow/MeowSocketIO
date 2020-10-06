@@ -3,6 +3,7 @@ package amqp
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/streadway/amqp"
@@ -11,7 +12,7 @@ import (
 // ConnectRabbit func
 func ConnectRabbit() (connect *amqp.Connection, channel *amqp.Channel) {
 
-	connect, err := amqp.Dial("amqp://guest:guest@192.168.1.10:5672")
+	connect, err := amqp.Dial(os.Getenv("RABBIT_ADDRESS"))
 
 	if err != nil {
 		log.Fatal(err)
@@ -19,19 +20,19 @@ func ConnectRabbit() (connect *amqp.Connection, channel *amqp.Channel) {
 
 	channel, err = connect.Channel()
 
-	err = channel.ExchangeDeclare("test", "topic", false, false, false, false, nil)
+	err = channel.ExchangeDeclare(os.Getenv("RABBIT_EXCHANGE"), "topic", false, false, false, false, nil)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	q, err := channel.QueueDeclare("test", false, false, false, false, nil)
+	q, err := channel.QueueDeclare(os.Getenv("RABBIT_QUEUE"), false, false, false, false, nil)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	err = channel.QueueBind(q.Name, "", "test", false, nil)
+	err = channel.QueueBind(q.Name, "", os.Getenv("RABBIT_EXCHANGE"), false, nil)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -43,7 +44,7 @@ func ConnectRabbit() (connect *amqp.Connection, channel *amqp.Channel) {
 // SendRabbitDashboard AMQP
 func SendRabbitDashboard(server *socketio.Server, channel *amqp.Channel) {
 
-	msg, err := channel.Consume("test", "", true, false, false, false, nil)
+	msg, err := channel.Consume(os.Getenv("RABBIT_QUEUE"), "", true, false, false, false, nil)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
