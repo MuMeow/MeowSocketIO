@@ -39,7 +39,7 @@ func main() {
 
 	header := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "HEAD", "OPTIONS"})
-	origins := handlers.AllowedOrigins([]string{""})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:3000"})
 	credentials := handlers.AllowCredentials()
 
 	// connect, channel := amqp.ConnectRabbit()
@@ -73,6 +73,12 @@ func main() {
 		s.Close()
 	})
 
+	r.HandleFunc("/count", func(w http.ResponseWriter, r *http.Request) {
+
+		log.Print("client : ", server.Count())
+
+	}).Methods("GET")
+
 	r.HandleFunc("/msg", func(w http.ResponseWriter, r *http.Request) {
 		var msg interface{}
 
@@ -88,6 +94,12 @@ func main() {
 		json.NewEncoder(w).Encode(msg)
 
 	}).Methods("POST")
+
+	r.HandleFunc("/health-check", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"alive":true}`))
+	}).Methods("GET")
 
 	r.Handle("/socket.io/", server)
 
