@@ -48,10 +48,9 @@ func SendRabbitDashboard(server *socketio.Server, channel *amqp.Channel) {
 		log.Fatal(err.Error())
 	}
 
-	// var rb interface{}
+	var rb interface{}
 
 	go func() {
-		var rb interface{}
 		for m := range msg {
 
 			json.Unmarshal(m.Body, &rb)
