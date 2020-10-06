@@ -43,7 +43,7 @@ func ConnectRabbit() (connect *amqp.Connection, channel *amqp.Channel) {
 // SendRabbitDashboard AMQP
 func SendRabbitDashboard(server *socketio.Server, channel *amqp.Channel) {
 
-	msg, err := channel.Consume("wms.dashboard", "", true, false, false, false, nil)
+	msg, err := channel.Consume("test", "", true, false, false, false, nil)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
